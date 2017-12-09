@@ -8,7 +8,7 @@
     .PARAMETER Path
     Specifies the path which contains the file to be removed.
 
-    .PARAMETER FilePattern
+    .PARAMETER FilePatterns
     Specifies the file pattern to be included.
 
     .PARAMETER RetainDays
@@ -17,7 +17,7 @@
     .EXAMPLE
     PS> .\Remove-Old-File.ps1 -Path D:\RDS\Soft\logs
 
-    This example will remove all the files with file pattern "*.log" older than 7 days from D:\RDS\Soft\logs
+    This example will remove all the files with file pattern "*.log" older than 14 days from D:\RDS\Soft\logs
 
     .EXAMPLE
     PS> .\Remove-Old-File.ps1 -RetainDays 30 -FilePatterns "*.log","*.csv" -Path D:\RDS\Soft\logs
@@ -35,7 +35,7 @@ param (
     [string []] $FilePatterns = @("*.log"),
 
     [ValidateRange(1, [int]::MaxValue)]
-    [int] $RetainDays = 7
+    [int] $RetainDays = 14
 )
 
 $retainDate = (Get-Date).AddDays(-$RetainDays)
@@ -52,7 +52,7 @@ foreach ($file in $files) {
     foreach ($pattern in $FilePatterns) {
         if ($file.Name -like $pattern) {              
             try {  
-                Write-Verbose "Removing $($file.FullName)"
+                Write-Verbose "Removing $($file.FullName)..."
                 $file.Delete()
                 $totalDeleted++
             } catch {
@@ -62,4 +62,4 @@ foreach ($file in $files) {
     }
 }
 
-Write-Verbose "Total deleted file: $totalDeleted"    
+Write-Verbose "Total deleted file(s): $totalDeleted"    
