@@ -1,5 +1,5 @@
 param (
-    [string] $Password = "secret",
+    [string] $Password  = "Docker123",
     [int] $Port = 1433
 )
 
