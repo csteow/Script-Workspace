@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<Settings>
+    <Encryption>
+        <KeyFile>~/aes.key</KeyFile>
+    </Encryption>
+
+    <Database>
+        <ConnectionString>Server=172.28.245.202;User Id=sa;Password=Docker123</ConnectionString>
+        <PrimaryServer>0AA4804A6D0B</PrimaryServer>
+    </Database>
+
+    <ScheduledTasks>
+        <TaskName>Adobe Acrobat Update Task</TaskName>
+        <!-- <TaskName>BitLocker MDM policy Refresh</TaskName> -->
+    </ScheduledTasks>
+
+    <Mail>
+        <SMTPServer>email-smtp.us-east-1.amazonaws.com</SMTPServer>
+        <SMTPPort>587</SMTPPort>
+        <MailFrom>Factset Datafeed Loader Agent &lt;csteow@hotmail.com&gt;</MailFrom>
+        <Recipients>
+            <Recipient>csteow@hotmail.com</Recipient>
+        </Recipients>
+        <SMTPUser>AKIAIKMWKE4LRVRCRALQ</SMTPUser>
+
+        <!-- Encrypted using Set-EncryptedPassword.ps1 -->
+        <SMTPPassword>76492d1116743f0423413b16050a5345MgB8AGMAZABrAGcAWABHADAASwBDAGoAVABKAGsAcwBEAHQAbwBaAHgAVwBFAHcAPQA9AHwAMgA4ADcAYQBjADQAMAA3ADMAZAA3ADkAZQAxADAAOQBkAGUAZQBiADEAMwA1AGUAYgA3ADUANABmAGYAMwA2ADQAMQA0ADIAZgBmAGUANAA4ADYAYQA4ADcAMwAxADYAMwAyAGYANwAyADMAMQBhADAANwBmADkANAA5ADYAMAAwADIAMQAxAGYAMwA5ADkAOAAyAGIAMwBjADEAZQBlADEAZQBmAGYAZQA0AGQAZgA1ADIAMAAxADAANgBjADAAMgA1AGEAMgBkADEAMAAyADQAMwA3ADcANQA5AGIAZgBlADIAZgBkADIAZgAzAGMAMQBkADUAMgBhADAAMgA0AGEAMQA1AGYAMwBiAGQAMgAzADQAOQBkADAANQAzAGQANgAwAGYAYgBlADMAOQBkAGMAOAA1AGQAMwBkADkAMQBkADIAZQAzAGUAYwBhADIAYgBhADIAMABlAGQAMwBmADIAYwBhAGMAYgAxADcANwBmADEAZgA0AGMANAAyAGYA</SMTPPassword>
+    </Mail>
+</Settings>
+
