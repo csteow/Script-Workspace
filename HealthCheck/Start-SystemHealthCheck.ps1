@@ -34,7 +34,7 @@ Write-Host "System Health Check Version $version"
 
 # Load settings from a XML configuration file
 Write-Host "Use configuration file: $ConfigurationFile"
-[xml] $configFile = Get-Content $xmlPath
+[xml] $configFile = Get-Content $ConfigurationFile
 
 # Collecting the health check status
 $systemHealthCheckStatus = @()
@@ -50,6 +50,7 @@ foreach ($taskName in $configFile.Settings.ScheduledTasks.TaskName) {
 $systemHealthCheckStatus += Get-ScheduledTaskStatus -TaskName $taskToCheck
 $systemHealthCheckStatus += Get-LogicalDiskFree -ComputerName $env:COMPUTERNAME
 $systemHealthCheckStatus += Get-SQLServerStatus -ConnectionString $connectionString -PrimaryServerName $primarySqlServer
+$systemHealthCheckStatus += Get-SystemInfo -ComputerName $env:COMPUTERNAME
 
 # Generate reports
 $overallStatus = Get-OverallStatus -HealthCheckStatus $systemHealthCheckStatus

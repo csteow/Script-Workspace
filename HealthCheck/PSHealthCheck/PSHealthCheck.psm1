@@ -45,7 +45,7 @@ function Out-TextReport {
     $textReport += $("=" * 80) + "$nl"
     $textReport += $Title + "$nl"
     $textReport += $("-" * 80) + "$nl"
-    
+
     foreach ($status in $systemHealthCheckStatus) {
         $statusText = Format-PadCenter -Message $status.Status -Length 6
         $message = "{0}[{1}]$nl" -f $status.Description.PadRight(72, "."), $statusText
@@ -85,7 +85,7 @@ function Out-HtmlReport {
         else {
             $statusStyle = "status-error"
         }
-     
+
         if ($status.Remark) {
             $remark = "<ul>"
             foreach ($line in $status.Remark) {
@@ -96,7 +96,7 @@ function Out-HtmlReport {
         else {
             $remark = ""
         }
-     
+
         $htmlBody += $("<tr><td><b>{0}</b>{1}</td><td><div class=`"{2}`">{3}</div></td></tr>" -f $status.Description, $remark, $statusStyle, $status.Status)
     }
 
@@ -178,7 +178,7 @@ function Get-OverallStatus {
         [PSObject []] $HealthCheckStatus
     )
 
-    $overallStatus = "OK"
+    $overallStatus = "Healthy"
     foreach ($status in $HealthCheckStatus) {
         if ($status.Status -ne "OK") {
             $overallStatus = "Failed"
@@ -186,6 +186,26 @@ function Get-OverallStatus {
     }
 
     Write-Output $overallStatus
+}
+
+function Get-SystemInfo {
+    [CmdletBinding()]
+    Param (
+        [string] $ComputerName = $env:COMPUTERNAME
+    )
+    
+    $healthStatus = @{
+        Status      = $StatusOK
+        Description = "Check System Information - $ComputerName"
+        Remark      = @()
+    }
+
+    $sysinfo = Get-WmiObject Win32_ComputerSystem | Select-Object  NumberOfLogicalProcessors, TotalPhysicalMemory 
+
+    $healthStatus.Remark += $("Cores: {0}" -f $sysinfo.NumberOfLogicalProcessors)
+    $healthStatus.Remark += $("Memory: {0:N0} GB" -f $($sysinfo.TotalPhysicalMemory / 1GB))
+
+    New-Object PSObject -Property $healthStatus
 }
 
 function Get-LogicalDiskFree {
@@ -292,7 +312,7 @@ function Get-SQLServerStatus {
 
     try {
         $conn.Open()
-        #$databaseName = $conn.Database()
+        $databaseName = $conn.Database
 
         # Check the primary server is up
         if ($PrimaryServerName) {
@@ -312,11 +332,30 @@ function Get-SQLServerStatus {
                 }
                 else {
                     $healthStatus.Status = $StatusFailed
-                    $healthStatus.Remark += "MSSQL is not running on $PrimaryServerName but $databaseComputerName"
+                    $healthStatus.Remark += "MSSQL is running on $databaseComputerName, not $PrimaryServerName"
                 }
             }
+
+            $reader.Close()
+        }
+        
+        $healthStatus.Remark += "Database Name: $databaseName"
+        
+        $sqlCmd.CommandText = "SELECT name, size * 8 * 1024 AS filesize FROM sys.database_files ORDER BY file_id"
+        $reader = $sqlCmd.ExecuteReader()
+        while ($reader.Read()) {
+            $name = $reader['name']
+            $filesize = $reader['filesize']
+            if ($filesize > 1GB) {
+                $displaySize = "{0:N1}GB" -f $($filesize / 1GB)
+            } else {
+                $displaySize = "{0:N1}MB" -f $($filesize / 1MB)
+            }
+            $healthStatus.Remark += $("File Size: {0} = {1}" -f $name, $displaySize)
         }
 
+
+        $reader.close()
     }
     catch {
         $healthStatus.Status = $StatusFailed
